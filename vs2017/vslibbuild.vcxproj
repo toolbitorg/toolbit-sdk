@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\attribute.h" />
+    <ClInclude Include="..\include\chopper.h" />
+    <ClInclude Include="..\include\choppy.h" />
+    <ClInclude Include="..\include\dmm.h" />
+    <ClInclude Include="..\include\hidapi.h" />
+    <ClInclude Include="..\include\module\adc.h" />
+    <ClInclude Include="..\include\module\adc_hw.h" />
+    <ClInclude Include="..\include\module\gpio_hw.h" />
+    <ClInclude Include="..\include\module\i2c_hw.h" />
+    <ClInclude Include="..\include\module\pin.h" />
+    <ClInclude Include="..\include\tbit.h" />
+    <ClInclude Include="..\include\tbi_core.h" />
+    <ClInclude Include="..\include\tbi_device.h" />
+    <ClInclude Include="..\include\tbi_device_manager.h" />
+    <ClInclude Include="..\include\tbi_service.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\attribute.cpp" />
+    <ClCompile Include="..\src\chopper.cpp" />
+    <ClCompile Include="..\src\choppy.cpp" />
+    <ClCompile Include="..\src\dmm.cpp" />
+    <ClCompile Include="..\src\HIDAPI\windows\hid.c" />
+    <ClCompile Include="..\src\module\adc.cpp" />
+    <ClCompile Include="..\src\module\adc_hw.cpp" />
+    <ClCompile Include="..\src\module\gpio_hw.cpp" />
+    <ClCompile Include="..\src\module\i2c_hw.cpp" />
+    <ClCompile Include="..\src\module\pin.cpp" />
+    <ClCompile Include="..\src\tbit.cpp" />
+    <ClCompile Include="..\src\tbi_core.cpp" />
+    <ClCompile Include="..\src\tbi_device.cpp" />
+    <ClCompile Include="..\src\tbi_device_manager.cpp" />
+    <ClCompile Include="..\src\tbi_service.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D795D8AB-F671-40AD-A604-4274677090C6}</ProjectGuid>
+    <RootNamespace>vslibbuild</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>libtbi</TargetName>
+    <OutDir>../lib/vs/</OutDir>
+    <IntDir>build/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>../lib/vs/</OutDir>
+    <IntDir>build/$(Configuration)\</IntDir>
+    <TargetName>libtbi</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../include;../include/module</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../include;../include/module</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

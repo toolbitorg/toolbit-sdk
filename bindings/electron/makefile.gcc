@@ -1,0 +1,27 @@
+TARGET = build/build/Release/toolbit.node
+
+# implementation
+
+all: $(TARGET)
+
+FORCE:
+
+$(TARGET):
+	@[ -d build ] || mkdir -p build
+	cp -f ../../include/*.h build
+	cp -f ../../include/module/*.h build
+	cp -f ../../src/*.cpp build
+	cp -f ../../src/module/*.cpp build
+	cp -f ../../src/hidapi/linux/hid.c build
+	cp -f ../toolbit.i build
+	cp -f binding_linux.gyp build/binding.gyp
+	cd build; swig -c++ -javascript -node toolbit.i
+	cd build; HOME=~/.electron-gyp node-gyp rebuild --target=4.2.12 --arch=x64 --dist-url=https://atom.io/download/electron
+	@[ -d toolbit-lib/lib ] || mkdir -p toolbit-lib/lib
+	cp -f build/build/Release/toolbit.node toolbit-lib/lib/toolbit-linux.node
+
+clean:
+	rm -fr build
+
+
+.PHONY: all clean
