@@ -44,11 +44,11 @@ int main(int argc, char* argv[])
 	cout << "ProductSerial: " << choppy->getProductSerial() << endl;
 	cout << "ProductVersion: " << choppy->getFirmVersion() << endl;
 
-	choppy->setColor(COLOR_RED);
-	cout << "Color: " << unsigned(choppy->getColor()) << endl;
+//	choppy->setColor(COLOR_RED);
+//	cout << "Color: " << unsigned(choppy->getColor()) << endl;
 
 
-	cout << "showReg: " << choppy->showReg() << endl;
+//	cout << "showReg: " << choppy->showReg() << endl;
 
 	cout << "Current: " << choppy->getCurrent() << endl;
 

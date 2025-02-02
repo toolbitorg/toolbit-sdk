@@ -6,7 +6,7 @@ choppy.open()
 
 print("Is connected?", choppy.isConnected())
 
-print(choppy.showReg())
+#print(choppy.showReg())
 
 print(choppy.getColor())
 
