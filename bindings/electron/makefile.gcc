@@ -15,8 +15,8 @@ $(TARGET):
 	cp -f ../../src/hidapi/linux/hid.c build
 	cp -f ../toolbit.i build
 	cp -f binding_linux.gyp build/binding.gyp
-	cd build; swig -c++ -javascript -node toolbit.i
-	cd build; HOME=~/.electron-gyp node-gyp rebuild --target=4.2.12 --arch=x64 --dist-url=https://atom.io/download/electron
+	cd build; swig -c++ -javascript -napi -DNODE_ADDON_API_CPP_EXCEPTIONS toolbit.i
+	cd build; HOME=~/.electron-gyp node-gyp rebuild --runtime=electron --target=33.2.1 --arch=x64 --dist-url=https://electronjs.org/headers
 	@[ -d toolbit-lib/lib ] || mkdir -p toolbit-lib/lib
 	cp -f build/build/Release/toolbit.node toolbit-lib/lib/toolbit-linux.node
 

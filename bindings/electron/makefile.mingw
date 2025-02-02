@@ -15,7 +15,6 @@ $(TARGET):
 	cp -f ../../src/hidapi/windows/hid.c build
 	cp -f ../../src/hidapi/windows/hidapi_descriptor_reconstruct.c build
 	cp -f ../../src/hidapi/windows/*.h build
-	cp -f node_modules/node-addon-api/*.h build
 	cp -f ../toolbit.i build
 	cp -f binding_mswin.gyp build/binding.gyp
 	cd build; swig -c++ -javascript -napi -DNODE_ADDON_API_CPP_EXCEPTIONS toolbit.i
