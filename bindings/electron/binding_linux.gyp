@@ -12,7 +12,7 @@
       'include_dirs': [
         '../node_modules/node-addon-api',
       ],
-      "sources": [ "toolbit_wrap.cxx", "tbi_core.cpp", "tbi_device.cpp", "tbi_service.cpp", "attribute.cpp", "tbit.cpp", "hid.c", "chopper.cpp", "dmm.cpp", "tbi_device_manager.cpp", "adc.cpp", "adc_hw.cpp", "gpio_hw.cpp", "i2c_hw.cpp", "pin.cpp"],
+      "sources": [ "toolbit_wrap.cxx", "tbi_core.cpp", "tbi_device.cpp", "tbi_service.cpp", "attribute.cpp", "tbit.cpp", "hid.c", "chopper.cpp", "choppy.cpp", "dmm.cpp", "tbi_device_manager.cpp", "adc.cpp", "adc_hw.cpp", "gpio_hw.cpp", "i2c_hw.cpp", "pin.cpp"],
       "libraries": [ "-ludev", "-lstdc++", "-lpthread", "-lrt" ],
       "cflags": ["-fexceptions"],
       "cflags_cc": ["-fexceptions"],
