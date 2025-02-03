@@ -1,14 +1,14 @@
 BINDIR = ../bin
 OBJDIR = ../build
-INCDIR = ../../../include
+INCDIR = -I../../../include -I../../../include/module
 LIBDIR = ../../../lib/macos
 LIBSRCDIR = ../../../src
 
 CC  = gcc
 CXX = g++
-CFLAGS  = -g -MMD -MP
+CFLAGS  = -g -MMD -MP -std=c++11
 LDFLAGS =
-INCLUDE = -I$(INCDIR)
+INCLUDE = $(INCDIR)
 
 LIBOBJS = $(LIBDIR)/libtbi.a
 LIBS = $(LIBOBJS) -framework IOKit -framework Carbon
