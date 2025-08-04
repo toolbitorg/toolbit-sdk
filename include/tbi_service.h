@@ -92,7 +92,7 @@ public:
 
 	bool readAttribute(Attribute *att);
 	bool writeAttribute(Attribute att);
-	void setInterruptHandler(function<void(tbiPacket)>& callback);
+	void setInterruptHandler(std::function<void(tbiPacket)> callback);
 
 private:
 	void worker();

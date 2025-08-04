@@ -16,7 +16,9 @@
 //#include <thread>
 #include <unistd.h>
 #endif
+#include <mutex>
 #include "hidapi.h"
+
 
 using namespace std;
 
@@ -53,6 +55,7 @@ protected:
 
 private:
     hid_device *handle;
+	mutex mtx;
 };
 
 #endif /* TOOLBITSDK_TBI_DEVICE_H_ */

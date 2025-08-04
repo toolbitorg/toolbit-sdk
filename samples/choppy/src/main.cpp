@@ -17,14 +17,6 @@
 using namespace std;
 
 
-
-void inthandler(tbiPacket pckt)
-{
-	cout << "Interrupt received!!" << endl;
-	return;
-}
-
-
 int main(int argc, char* argv[])
 {
     Choppy *choppy = new Choppy();
@@ -42,26 +34,57 @@ int main(int argc, char* argv[])
 	cout << "ProductName: " << choppy->getProductName() << endl;
 	cout << "ProductRevision: " << choppy->getProductRevision() << endl;
 	cout << "ProductSerial: " << choppy->getProductSerial() << endl;
-	cout << "ProductVersion: " << choppy->getFirmVersion() << endl;
+	cout << "FirmwareVersion: " << choppy->getFirmVersion() << endl;
 
+//	choppy->setColor(COLOR_GREEN);
+//	choppy->setColor(COLOR_BLUE);
+//	choppy->setColor(COLOR_BROWN);
 //	choppy->setColor(COLOR_RED);
-//	cout << "Color: " << unsigned(choppy->getColor()) << endl;
-
+	//	cout << "Color: " << unsigned(choppy->getColor()) << endl;
 
 //	cout << "showReg: " << choppy->showReg() << endl;
 
+	cout << "Start" << endl;
+
+	uint8_t delay = 0;
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
 	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
 
-	/*
-	std::function<void(tbiPacket)> func = inthandler;
-	choppy->setInterruptCallback(func);
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
 
-	function<void(tbiPacket)> callback(tbiPacket pckt);
-	*/
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Voltage: " << choppy->getVoltage() << endl;
+	cout << "Current: " << choppy->getCurrent() << endl;
+	Sleep(delay);
+
+	cout << "Stop" << endl;
 
 
 #ifdef WIN32
-	system("pause");
+//	system("pause");
 #endif
 	return 0;
 }

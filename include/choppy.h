@@ -19,9 +19,14 @@
 #define ATT_ADC_BASE   0x1300
 #define ATT_IC20_BASE  0x1400
 // Product specific attribute ID
-#define ATT_COLOR      0x8100
-#define ATT_VOLTAGE    0x8101
-#define ATT_CURRENT    0x8102
+#define ATT_TRIGGER_MODE 0x8000
+#define ATT_COLOR        0x8100
+#define ATT_VOLTAGE      0x8101
+#define ATT_CURRENT      0x8102
+
+// Trigger Mode value
+#define TRIGGER_MODE_NORMAL     0x00
+#define TRIGGER_MODE_CONTINUOUS 0x01
 
 // Color value
 #define COLOR_BLACK    0x00
@@ -48,6 +53,7 @@ public:
 	bool open();
 	bool open(string serial);
 	bool enableDfu();
+	bool setTriggerMode(uint8_t val);
 	uint8_t getColor();
 	bool setColor(uint8_t val);
 	float getVoltage();
@@ -56,6 +62,8 @@ public:
 	string showReg();
 	uint16_t getDeviceID();
 
+	void interruptHandler(tbiPacket pckt);
+
 protected:
 
 private:
@@ -63,9 +71,14 @@ private:
 	Attribute* mAttReset;
 
 	// Product specific attribute ID
+	Attribute* mAttTriggerMode;
 	Attribute* mAttColor;
 	Attribute* mAttVoltage;
 	Attribute* mAttCurrent;
+
+	// Recieved Data by interrupt
+	float latest_volt;
+	float latest_curr;
 };
 
 #endif /* TOOLBITSDK_DMM_H_ */

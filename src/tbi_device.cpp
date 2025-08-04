@@ -97,6 +97,7 @@ bool TbiDevice::write(uint8_t *sndbuf, uint8_t num)
 	memcpy(&buf[1], sndbuf, num);
 
 	// Write to HID device
+	lock_guard<mutex> lock(mtx);
 	hid_write(handle, buf, BUF_LEN);
 
 	return false;
@@ -105,7 +106,8 @@ bool TbiDevice::write(uint8_t *sndbuf, uint8_t num)
 int TbiDevice::read(uint8_t *rcvbuf)
 {
 	// Read response from HID device
-	return hid_read(handle, rcvbuf, BUF_LEN);
+	lock_guard<mutex> lock(mtx);
+    return hid_read(handle, rcvbuf, BUF_LEN);
 }
 
 
