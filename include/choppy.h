@@ -28,6 +28,9 @@
 #define TRIGGER_MODE_NORMAL     0x00
 #define TRIGGER_MODE_CONTINUOUS 0x01
 
+#define DATA_BUF_SIZE_MAX 1000
+#define INTEGRATING_TIME_DEFAULT 17
+
 // Color value
 #define COLOR_BLACK    0x00
 #define COLOR_BROWN    0x01
@@ -54,6 +57,7 @@ public:
 	bool open(string serial);
 	bool enableDfu();
 	bool setTriggerMode(uint8_t val);
+	bool setIntegratingTime(uint16_t ms);	        
 	uint8_t getColor();
 	bool setColor(uint8_t val);
 	float getVoltage();
@@ -76,9 +80,17 @@ private:
 	Attribute* mAttVoltage;
 	Attribute* mAttCurrent;
 
-	// Recieved Data by interrupt
-	float latest_volt;
-	float latest_curr;
+	uint16_t integratingTime;  // unit: msec
+
+	// For recieved data handing
+	float volt_buf[DATA_BUF_SIZE_MAX];
+	float curr_buf[DATA_BUF_SIZE_MAX];
+	uint16_t data_cnt;
+	float volt_avg;
+	float curr_avg;
+	float volt_latest;
+	float curr_latest;
+
 };
 
 #endif /* TOOLBITSDK_DMM_H_ */

@@ -116,7 +116,8 @@ void TbiService::worker()
 					}	
 				}
 				else {
-					this_thread::sleep_for(chrono::milliseconds(1));
+//					this_thread::sleep_for(chrono::milliseconds(1));
+					this_thread::yield();
 				}
 			}
 			if (thAbort)

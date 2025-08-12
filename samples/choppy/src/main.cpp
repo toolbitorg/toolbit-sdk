@@ -40,13 +40,14 @@ int main(int argc, char* argv[])
 //	choppy->setColor(COLOR_BLUE);
 //	choppy->setColor(COLOR_BROWN);
 //	choppy->setColor(COLOR_RED);
-	//	cout << "Color: " << unsigned(choppy->getColor()) << endl;
+//	cout << "Color: " << unsigned(choppy->getColor()) << endl;
 
 //	cout << "showReg: " << choppy->showReg() << endl;
 
 	cout << "Start" << endl;
 
-	uint8_t delay = 0;
+	uint16_t delay = 1000;
+	Sleep(delay);
 
 	cout << "Voltage: " << choppy->getVoltage() << endl;
 	cout << "Current: " << choppy->getCurrent() << endl;
