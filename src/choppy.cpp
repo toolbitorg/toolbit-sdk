@@ -38,9 +38,9 @@
 #define INA228_DEVICE_ID       0x3F
 
 // Make it thread-safe for interruptHanlder
-mutex mtx;
-atomic<bool> volt_updated{ false };
-atomic<bool> curr_updated{ false };
+inline mutex mtx;
+inline atomic<bool> volt_updated{ false };
+inline atomic<bool> curr_updated{ false };
 
 
 Choppy::Choppy() :
@@ -52,7 +52,7 @@ Choppy::Choppy() :
 	mAttVoltage = new Attribute(ATT_VOLTAGE, 0x00, 0x00);
 	mAttCurrent = new Attribute(ATT_CURRENT, 0x00, 0x00);
 
-	integratingTime = INTEGRATING_TIME_DEFAULT;
+	integratingTime = CHOPPY_INTEGRATING_TIME;
 	data_cnt = 0;
 	volt_avg = 0.0;
 	curr_avg = 0.0;
