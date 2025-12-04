@@ -39,6 +39,7 @@ bool TbiCore::openPath(const char *path)
 		return true;
 
 	// Read product data from device
+	mTbiService->start();
 	mTbiService->readAttribute(&mAttVendorName);
 	mTbiService->readAttribute(&mAttProductName);
 	mTbiService->readAttribute(&mAttProductRevision);
@@ -53,6 +54,7 @@ bool TbiCore::close()
 	if (!mTbiDevice->isOpen())
 		return true;
 
+	mTbiService->stop();
 	mTbiDevice->close();
 	return false;
 }

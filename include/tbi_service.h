@@ -90,6 +90,8 @@ public:
 	TbiService(TbiDevice *p);
 	~TbiService();
 
+	bool start();
+	bool stop();
 	bool readAttribute(Attribute *att);
 	bool writeAttribute(Attribute att);
 	void setInterruptHandler(std::function<void(tbiPacket)> callback);

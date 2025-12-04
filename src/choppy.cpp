@@ -11,8 +11,7 @@
 #include <string>
 #include <sstream>
 #include <stdlib.h>
-#include <atomic>
-#include <mutex>
+#include <math.h>
 #include "tbi_device_manager.h"
 #include "choppy.h"
 
@@ -37,14 +36,34 @@
 #define INA228_MANUFACTURER_ID 0x3E
 #define INA228_DEVICE_ID       0x3F
 
-// Make it thread-safe for interruptHanlder
-inline mutex mtx;
-inline atomic<bool> volt_updated{ false };
-inline atomic<bool> curr_updated{ false };
+
+// Logging configuration
+#define LOG_LEVEL_WARN 1
+#define LOG_LEVEL_INFO 2
+#define LOG_LEVEL_NONE 0
+
+#ifndef LOG_LEVEL
+#define LOG_LEVEL LOG_LEVEL_NONE
+#endif
+
+#if LOG_LEVEL >= LOG_LEVEL_WARN
+	#define WARN(...) \
+		do { fprintf(stderr, "[WARN] "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
+#else
+	#define WARN(...) ((void)0)
+#endif
+
+#if LOG_LEVEL >= LOG_LEVEL_INFO
+	#define INFO(...) \
+		do { fprintf(stderr, "[INFO] "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
+#else
+	#define INFO(...) ((void)0)
+#endif
 
 
 Choppy::Choppy() :
-	i2chw(mTbiService, ATT_IC20_BASE)
+	i2chw(mTbiService, ATT_IC20_BASE),
+	volt_updated(false), curr_updated(false)
 {
 	mAttReset = new Attribute(ATT_RESET, 0x00, 0x00);
 	mAttTriggerMode = new Attribute(ATT_TRIGGER_MODE, 0x00, 0x00);
@@ -52,15 +71,13 @@ Choppy::Choppy() :
 	mAttVoltage = new Attribute(ATT_VOLTAGE, 0x00, 0x00);
 	mAttCurrent = new Attribute(ATT_CURRENT, 0x00, 0x00);
 
-	integratingTime = CHOPPY_INTEGRATING_TIME;
+	integratingTime = CHOPPY_DEFAULT_INTEGRATING_TIME_MS;
 	data_cnt = 0;
 	volt_avg = 0.0;
 	curr_avg = 0.0;
 
-	volt_updated.store(false);
-	curr_updated.store(false);
-	volt_latest = -999.9;
-	curr_latest = -999.9;
+	volt_latest = NAN;
+	curr_latest = NAN;
 
 	std::function<void(tbiPacket)> func = [this](tbiPacket pckt) { interruptHandler(pckt); };
 	setInterruptCallback(func);
@@ -68,7 +85,6 @@ Choppy::Choppy() :
 
 Choppy::~Choppy()
 {
-	setTriggerMode(TRIGGER_MODE_NORMAL);
 	close();
 
 	delete mAttTriggerMode;
@@ -84,6 +100,7 @@ bool Choppy::open()
 	if (openPath(devm.getPathByName("Choppy"))) {
 		return true;
 	}
+	INFO("Set TRIGGER_MODE_CONTINUOUS");
 	setTriggerMode(TRIGGER_MODE_CONTINUOUS);
 	return false;
 }
@@ -94,7 +111,23 @@ bool Choppy::open(string serial)
 	if (openPath(devm.getPathByNameAndSerial("Choppy", serial))) {
 		return true;
 	}
+	INFO("Set TRIGGER_MODE_CONTINUOUS");
 	setTriggerMode(TRIGGER_MODE_CONTINUOUS);
+	return false;
+}
+
+bool Choppy::close()
+{
+	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_CONTINUOUS) {
+		INFO("Set TRIGGER_MODE_NONE");
+		setTriggerMode(TRIGGER_MODE_NONE);
+	}
+
+	if (!mTbiDevice->isOpen())
+		return true;
+
+	mTbiService->stop();
+	mTbiDevice->close();
 	return false;
 }
 
@@ -105,11 +138,10 @@ bool Choppy::enableDfu()
 
 bool Choppy::setTriggerMode(uint8_t val)
 {
-	uint8_t previous_val = mAttTriggerMode->getValueUint8();
-
 	mAttTriggerMode->setValue(val);
 	if (mTbiService->writeAttribute(*mAttTriggerMode)) {
-		mAttTriggerMode->setValue(previous_val);
+		mAttTriggerMode->setValue(TRIGGER_MODE_NONE);
+		INFO("Not support trigger mode");
 		return true;
 	}
 	return false;
@@ -117,7 +149,7 @@ bool Choppy::setTriggerMode(uint8_t val)
 
 bool Choppy::setIntegratingTime(uint16_t ms)
 {
-	if (ms < 1 || ms > DATA_BUF_SIZE_MAX) {
+	if (ms < CHOPPY_MEASUREMENT_INTERVAL_MS || ms > DATA_BUF_SIZE_MAX) {
 		return true;
 	}
 	integratingTime = ms;
@@ -142,17 +174,23 @@ bool Choppy::setColor(uint8_t val)
 float Choppy::getVoltage()
 {
 	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_CONTINUOUS) {
-		while (!volt_updated.load()) {
-			Sleep(1);
+		int cnt = 10;
+		while (!volt_updated.load() && cnt != 0) {
+			cnt--;
+			Sleep(5);
+		}
+		if (cnt == 0) {
+			// error
+			return NAN;
 		}
 		lock_guard<mutex> lock(mtx);
 		volt_updated.store(false);
 		return volt_latest;
-	}
-	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_NORMAL) {
+	} else {
+		// TRIGGER_MODE_NORMAL or TRIGGER_MODE_NONE
 		if (mTbiService->readAttribute(mAttVoltage)) {
 			// error
-			return -999.9;
+			return NAN;
 		}
 		return mAttVoltage->getValueFloat();
 	}
@@ -160,18 +198,24 @@ float Choppy::getVoltage()
 
 float Choppy::getCurrent()
 {
-	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_CONTINUOUS) {
-		while (!curr_updated.load()) {
-			Sleep(0);
+	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_CONTINUOUS) {		
+		int cnt = 10;
+		while (!curr_updated.load() && cnt != 0) {
+			cnt--;
+			Sleep(5);
+		}
+		if (cnt == 0) {
+			// error
+			return NAN;
 		}
 		lock_guard<mutex> lock(mtx);
 		curr_updated.store(false);
 		return curr_latest;
-	}
-	if (mAttTriggerMode->getValueUint8() == TRIGGER_MODE_NORMAL) {
+	} else {
+		// TRIGGER_MODE_NORMAL or TRIGGER_MODE_NONE
 		if (mTbiService->readAttribute(mAttCurrent)) {
 			// error
-			return -999.9;
+			return NAN;
 		}
 		return mAttCurrent->getValueFloat();
 	}
@@ -203,6 +247,7 @@ void Choppy::interruptHandler(tbiPacket pckt)
 	float vol;
 	float cur;
 
+	INFO("interruptHandler is called");
 	int len = (pckt.dat[0] & 0x3F) - 2;
 
 	if (len == 32) {
@@ -220,12 +265,11 @@ void Choppy::interruptHandler(tbiPacket pckt)
 			volt_avg += vol;
 			curr_avg += cur;
 
-			if (data_cnt == integratingTime) {
+			if (CHOPPY_MEASUREMENT_INTERVAL_MS * data_cnt >= integratingTime) {
 
 				lock_guard<mutex> lock(mtx);
-
-				volt_latest = volt_avg / integratingTime;
-				curr_latest = curr_avg / integratingTime;
+				volt_latest = volt_avg / data_cnt;
+				curr_latest = curr_avg / data_cnt;
 				volt_updated.store(true);
 				curr_updated.store(true);
 
@@ -238,7 +282,7 @@ void Choppy::interruptHandler(tbiPacket pckt)
 
 	}
 	else {
-		volt_latest = -999.9;
-		curr_latest = -999.9;
+		volt_latest = NAN;
+		curr_latest = NAN;
 	}
 }

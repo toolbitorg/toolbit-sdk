@@ -10,6 +10,8 @@
 #define TOOLBITSDK_CHOPPY_H_
 
 #include <stdint.h>
+#include <atomic>
+#include <mutex>
 #include "i2c_hw.h"
 #include "attribute.h"
 
@@ -25,11 +27,13 @@
 #define ATT_CURRENT      0x8102
 
 // Trigger Mode value
-#define TRIGGER_MODE_NORMAL     0x00
-#define TRIGGER_MODE_CONTINUOUS 0x01
+#define TRIGGER_MODE_NONE       0x00
+#define TRIGGER_MODE_NORMAL     0x01
+#define TRIGGER_MODE_CONTINUOUS 0x02
 
 #define DATA_BUF_SIZE_MAX 1000
-#define CHOPPY_INTEGRATING_TIME 17
+#define CHOPPY_MEASUREMENT_INTERVAL_MS 1  // 1ms interval
+#define CHOPPY_DEFAULT_INTEGRATING_TIME_MS 16
 
 // Color value
 #define COLOR_BLACK    0x00
@@ -55,6 +59,7 @@ public:
 
 	bool open();
 	bool open(string serial);
+	bool close();
 	bool enableDfu();
 	bool setTriggerMode(uint8_t val);
 	bool setIntegratingTime(uint16_t ms);	        
@@ -91,6 +96,10 @@ private:
 	float volt_latest;
 	float curr_latest;
 
+	// Make it thread-safe for interruptHanlder
+	mutex mtx;
+	atomic<bool> volt_updated;
+	atomic<bool> curr_updated;
 };
 
 #endif /* TOOLBITSDK_DMM_H_ */
