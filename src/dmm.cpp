@@ -12,6 +12,8 @@
 #include <sstream>
 #include <stdlib.h>
 #include <math.h>
+#include <chrono>
+#include <thread>
 #include "tbi_device_manager.h"
 #include "dmm.h"
 
@@ -195,7 +197,7 @@ float Dmm::getVoltage()
 		int cnt = 10;
 		while (!volt_updated.load() && cnt != 0) {
 			cnt--;
-			Sleep(5);
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		if (cnt == 0) {
 			// error
@@ -220,7 +222,7 @@ float Dmm::getCurrent()
 		int cnt = 10;
 		while (!curr_updated.load() && cnt != 0) {
 			cnt--;
-			Sleep(5);
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 		if (cnt == 0) {
 			// error
